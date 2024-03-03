@@ -1,0 +1,17 @@
+version: '3'
+services:
+  ide:
+      build: .
+      #image: cloudlab213/theia:latest
+      container_name: theia_ide
+      volumes:
+        - /home/ubuntu/code:/home/project/code
+        - /home/ubuntu/exploit.py:/home/project/exploit.py
+        - /home/ubuntu/Bridgecrew.checkov-1.0.93.vsix:/home/project/Bridgecrew.checkov-1.0.93.vsix
+        - /home/ubuntu/server:/home/project/server
+        - /home/ubuntu/server.pub:/home/project/server.pub
+        - /home/ubuntu/git-ssh:/home/.ssh/
+        - /home/ubuntu/config:/home/.ssh/config
+      ports:
+        - "3000:3000"
+      restart: always
