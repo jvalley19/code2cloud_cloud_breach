@@ -13,7 +13,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install \
     p7zip-full -y
 #--------------end
 
-Malware start
+#Malware start
 
 RUN mkdir /home/app
 WORKDIR /home/app
@@ -21,7 +21,7 @@ WORKDIR /home/app
 COPY entrypoint.sh /home/app/entrypoint.sh
 ENTRYPOINT ["sh","entrypoint.sh"]
 
-Malware end
+#Malware end
 
 COPY ./ /usr/src/
 WORKDIR /usr/src
