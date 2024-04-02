@@ -43,20 +43,20 @@ pipeline {
       //       }
       //   }
 
-       stage('IaC') {
-          steps {
-                withCredentials([
-                   string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
-                   string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
-                   ]) {
-                   sh '''export PRISMA_API_URL=https://api0.prismacloud.io
-                     virtualenv -p python3 .venv
-                     . .venv/bin/activate && pip install bridgecrew
-                     . .venv/bin/activate && bridgecrew --directory . --skip-path .venv --bc-api-key $PRISMA_ACCESS_KEY::$PRISMA_SECRET_KEY --use-enforcement-rules --repo-id qaswqaa/code2cloud_cloud_breach
-                     '''
-                }
-             }
-         }
+      //  stage('IaC') {
+      //     steps {
+      //           withCredentials([
+      //              string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
+      //              string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
+      //              ]) {
+      //              sh '''export PRISMA_API_URL=https://api0.prismacloud.io
+      //                virtualenv -p python3 .venv
+      //                . .venv/bin/activate && pip install bridgecrew
+      //                . .venv/bin/activate && bridgecrew --directory . --skip-path .venv --bc-api-key $PRISMA_ACCESS_KEY::$PRISMA_SECRET_KEY --use-enforcement-rules --repo-id qaswqaa/code2cloud_cloud_breach
+      //                '''
+      //           }
+      //        }
+      //    }
         stage('Image Deploy') {
             steps {
                 withAWS(credentials: 'aws-cred', region: 'us-east-1') {
@@ -69,34 +69,34 @@ pipeline {
                }
             }
         }
-      //   stage('Container Sandbox Scan') {
-      //    steps {
-      //       sshagent(credentials: ['ssh']) {
-      //          withCredentials([
-      //             string(credentialsId: 'PCC_CONSOLE_URL', variable: 'PCC_CONSOLE_URL'),
-      //             string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
-      //             string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
-      //             ]) {
-      //             sh '''
-      //             #This  command will generate an authorization token (Only valid for 1 hour)
-      //             json_auth_data="$(printf '{ "username": "%s", "password": "%s" }' "${PRISMA_ACCESS_KEY}" "${PRISMA_SECRET_KEY}")"
+        stage('Container Sandbox Scan') {
+         steps {
+            sshagent(credentials: ['ssh']) {
+               withCredentials([
+                  string(credentialsId: 'PCC_CONSOLE_URL', variable: 'PCC_CONSOLE_URL'),
+                  string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
+                  string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
+                  ]) {
+                  sh '''
+                  #This  command will generate an authorization token (Only valid for 1 hour)
+                  json_auth_data="$(printf '{ "username": "%s", "password": "%s" }' "${PRISMA_ACCESS_KEY}" "${PRISMA_SECRET_KEY}")"
 
-      //             token=$(curl -sSLk -d "$json_auth_data" -H 'content-type: application/json' "$PCC_CONSOLE_URL/api/v1/authenticate" | python3 -c 'import sys, json; print(json.load(sys.stdin)["token"])')
+                  token=$(curl -sSLk -d "$json_auth_data" -H 'content-type: application/json' "$PCC_CONSOLE_URL/api/v1/authenticate" | python3 -c 'import sys, json; print(json.load(sys.stdin)["token"])')
 
-      //             [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
-      //             ssh-keyscan -t rsa,dsa 10.10.10.104 >> ~/.ssh/known_hosts
-      //             ssh ubuntu@10.10.10.104 'bash -s' <<EOF
+                  [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
+                  ssh-keyscan -t rsa,dsa 10.10.10.104 >> ~/.ssh/known_hosts
+                  ssh ubuntu@10.10.10.104 'bash -s' <<EOF
                   
-      //             chmod +x /home/ubuntu/sandbox.sh
-      //             sudo PCC_CONSOLE_URL=$PCC_CONSOLE_URL token=$token ECR_REPOSITORY=$ECR_REPOSITORY CONTAINER_NAME=$CONTAINER_NAME /home/ubuntu/sandbox.sh
+                  chmod +x /home/ubuntu/sandbox.sh
+                  sudo PCC_CONSOLE_URL=$PCC_CONSOLE_URL token=$token ECR_REPOSITORY=$ECR_REPOSITORY CONTAINER_NAME=$CONTAINER_NAME /home/ubuntu/sandbox.sh
 
-      //             exit
-      //             EOF
-      //             '''
-      //          }
-      //       }
-      //    }
-      //   }
+                  exit
+                  EOF
+                  '''
+               }
+            }
+         }
+        }
         stage('Server Deploy') {
          steps {
           sshagent(credentials: ['ssh']) {
