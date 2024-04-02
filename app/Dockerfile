@@ -23,11 +23,11 @@ ENTRYPOINT ["sh","entrypoint.sh"]
 
 #Malware end
 
-COPY ./ /usr/src/
-WORKDIR /usr/src
+#COPY ./ /usr/src/
+#WORKDIR /usr/src
 
-RUN set -ex \
-    && mvn compile jetty:help
+#RUN set -ex \
+ #   && mvn compile jetty:help
 
 # fix issue
 #-----------start
