@@ -1,4 +1,4 @@
-# Attack Demos - SHI
+# Attack Demos - CSC
 
 ## Overview
 

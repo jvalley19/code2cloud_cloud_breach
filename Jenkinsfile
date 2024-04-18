@@ -2,7 +2,7 @@ pipeline {
    agent any
    environment {
       AWS_REGION = 'us-east-1'
-      ECR_REPOSITORY = '230372333806.dkr.ecr.us-east-1.amazonaws.com/code2cloud-ecr'
+      ECR_REPOSITORY = '339712849473.dkr.ecr.us-east-1.amazonaws.com/code2cloud-ecr'
       CONTAINER_NAME = 'code2cloud'
       PCC_SAN = 'us-east1.cloud.twistlock.com'
       // ECR_REPOSITORY = '' // ex. '89647xxxxxxx.dkr.ecr.us-east-1.amazonaws.com/code2cloud-ecr'
