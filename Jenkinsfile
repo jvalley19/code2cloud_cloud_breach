@@ -43,20 +43,20 @@ pipeline {
       //       }
       //   }
 
-      //  stage('IaC') {
-      //     steps {
-      //           withCredentials([
-      //              string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
-      //              string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
-      //              ]) {
-      //              sh '''export PRISMA_API_URL=https://api0.prismacloud.io
-      //                virtualenv -p python3 .venv
-      //                . .venv/bin/activate && pip install bridgecrew
-      //                . .venv/bin/activate && bridgecrew --directory . --skip-path .venv --bc-api-key $PRISMA_ACCESS_KEY::$PRISMA_SECRET_KEY --use-enforcement-rules --repo-id qaswqaa/code2cloud_cloud_breach
-      //                '''
-      //           }
-      //        }
-      //    }
+       stage('IaC') {
+          steps {
+                withCredentials([
+                   string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
+                   string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
+                   ]) {
+                   sh '''export PRISMA_API_URL=https://api0.prismacloud.io
+                     virtualenv -p python3 .venv
+                     . .venv/bin/activate && pip install bridgecrew
+                     . .venv/bin/activate && bridgecrew --directory . --skip-path .venv --bc-api-key $PRISMA_ACCESS_KEY::$PRISMA_SECRET_KEY --use-enforcement-rules --repo-id qaswqaa/code2cloud_cloud_breach
+                     '''
+                }
+             }
+         }
         stage('Image Deploy') {
             steps {
                 withAWS(credentials: 'aws-cred', region: 'us-east-1') {
