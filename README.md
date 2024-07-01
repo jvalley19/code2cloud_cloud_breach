@@ -1,4 +1,4 @@
-# Attack Demos - CSC
+# Attack Demos - Clarivate
 
 ## Overview
 
