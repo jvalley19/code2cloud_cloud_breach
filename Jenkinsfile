@@ -24,39 +24,39 @@ pipeline {
                }
             }
         }
-      //   stage('Container Scan') {
-      //    steps {
-      //          withCredentials([
-      //             string(credentialsId: 'PCC_CONSOLE_URL', variable: 'PCC_CONSOLE_URL'),
-      //             string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
-      //             string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
-      //             ]) {
-      //             sh '''
-      //             #This  command will generate an authorization token (Only valid for 1 hour)
-      //             json_auth_data="$(printf '{ "username": "%s", "password": "%s" }' "${PRISMA_ACCESS_KEY}" "${PRISMA_SECRET_KEY}")"
+        stage('Container Scan') {
+         steps {
+               withCredentials([
+                  string(credentialsId: 'PCC_CONSOLE_URL', variable: 'PCC_CONSOLE_URL'),
+                  string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
+                  string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
+                  ]) {
+                  sh '''
+                  #This  command will generate an authorization token (Only valid for 1 hour)
+                  json_auth_data="$(printf '{ "username": "%s", "password": "%s" }' "${PRISMA_ACCESS_KEY}" "${PRISMA_SECRET_KEY}")"
 
-      //             token=$(curl -sSLk -d "$json_auth_data" -H 'content-type: application/json' "$PCC_CONSOLE_URL/api/v1/authenticate" | python3 -c 'import sys, json; print(json.load(sys.stdin)["token"])')
+                  token=$(curl -sSLk -d "$json_auth_data" -H 'content-type: application/json' "$PCC_CONSOLE_URL/api/v1/authenticate" | python3 -c 'import sys, json; print(json.load(sys.stdin)["token"])')
 
-      //             twistcli images scan --address $PCC_CONSOLE_URL --token=$token --details $ECR_REPOSITORY:$CONTAINER_NAME
-      //             '''
-      //          }
-      //       }
-      //   }
+                  twistcli images scan --address $PCC_CONSOLE_URL --token=$token --details $ECR_REPOSITORY:$CONTAINER_NAME
+                  '''
+               }
+            }
+        }
 
-      //  stage('IaC') {
-      //     steps {
-      //           withCredentials([
-      //              string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
-      //              string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
-      //              ]) {
-      //              sh '''export PRISMA_API_URL=https://api0.prismacloud.io
-      //                virtualenv -p python3 .venv
-      //                . .venv/bin/activate && pip install bridgecrew
-      //                . .venv/bin/activate && bridgecrew --directory . --skip-path .venv --bc-api-key $PRISMA_ACCESS_KEY::$PRISMA_SECRET_KEY --use-enforcement-rules --repo-id qaswqaa/code2cloud_cloud_breach
-      //                '''
-      //           }
-      //        }
-      //    }
+       stage('IaC') {
+          steps {
+                withCredentials([
+                   string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
+                   string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
+                   ]) {
+                   sh '''export PRISMA_API_URL=https://api0.prismacloud.io
+                     virtualenv -p python3 .venv
+                     . .venv/bin/activate && pip install bridgecrew
+                     . .venv/bin/activate && bridgecrew --directory . --skip-path .venv --bc-api-key $PRISMA_ACCESS_KEY::$PRISMA_SECRET_KEY --use-enforcement-rules --repo-id qaswqaa/code2cloud_cloud_breach
+                     '''
+                }
+             }
+         }
         stage('Image Deploy') {
             steps {
                 withAWS(credentials: 'aws-cred', region: 'us-east-1') {
